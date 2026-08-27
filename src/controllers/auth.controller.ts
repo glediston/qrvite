@@ -5,7 +5,7 @@ export async function registrarController(req: Request, res: Response) {
   try {
     const { email, senha } = req.body;
     const token = await authService.registrar(email, senha);
-    res.status(201).json({ token });
+    res.status(201).json({ mensagem: 'Usuário registrado com sucesso.',  token });
   } catch (erro: any) {
     res.status(400).json({ erro: erro.message });
   }
