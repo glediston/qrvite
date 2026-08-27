@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id               String    @id @default(uuid())
+  email            String    @unique
+  senhaHash        String
+  resetToken       String?
+  resetTokenExpira DateTime?
+  criadoEm         DateTime  @default(now())
+  eventos          Evento[]
+}
+
+model Plano {
+  id       String   @id @default(uuid())
+  nome     String
+  limiteMB Int
+  preco    Float
+  eventos  Evento[]
+}
+
+model Evento {
+  id           String   @id @default(uuid())
+  nome         String
+  cidade       String
+  data         DateTime
+  slug         String   @unique
+  status       String   @default("pendente_pagamento")
+  tipoEvento   String?
+  fraseConvite String?
+  fotoCapaUrl  String?
+  criadoEm     DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  planoId String
+  plano   Plano  @relation(fields: [planoId], references: [id])
+
+  fotos      Foto[]
+  pagamentos Pagamento[]
+}
+
+model Foto {
+  id       String   @id @default(uuid())
+  url      String
+  criadoEm DateTime @default(now())
+
+  eventoId String
+  evento   Evento @relation(fields: [eventoId], references: [id])
+}
+
+model Pagamento {
+  id            String @id @default(uuid())
+  status        String
+  mercadoPagoId String?
+  valor         Float
+
+  eventoId String
+  evento   Evento @relation(fields: [eventoId], references: [id])
+}
